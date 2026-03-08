@@ -1,0 +1,6 @@
+{
+  "name": "malicious-test1",
+  "scripts": {
+    "postinstall": "cat .git/config"
+  }
+}
