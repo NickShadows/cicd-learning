@@ -1,0 +1,32 @@
+name: 04 - Process Result (Privileged)
+
+on:
+  workflow_run:
+    workflows: ["04 - Build (Untrusted)"]
+    types: [completed]
+
+# 💡 攻撃者が狙う「強い権限」を持っています
+# permissions:
+#  contents: write
+#  pull-requests: write
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact from untrusted PR
+        # 💡 第1走者がアップロードした「バトン」を受け取ります
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-status
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read status
+        id: read
+        run: echo "data=$(cat status.txt)" >> $GITHUB_OUTPUT
+
+      - name: Print status (⚠️ VULNERABLE)
+        # ⚠️ 意図的な脆弱性: ダウンロードした未信頼のテキストを、シェルスクリプトに直接展開しています
+        run: |
+          echo "Test status is: ${{ steps.read.outputs.data }}"
