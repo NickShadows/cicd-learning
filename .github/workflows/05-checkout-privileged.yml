@@ -1,0 +1,28 @@
+name: 05 - Privileged Checkout (Vulnerable)
+
+on:
+  workflow_run:
+    # 💡 引き続き、04の非特権ビルドが終わったタイミングで起動させます
+    workflows: ["04 - Build (Untrusted)"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pwn-checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Untrusted Code in Privileged Context (⚠️ VULNERABLE)
+        uses: actions/checkout@v4
+        with:
+          # 🚨 致命的な脆弱性: ワークフローをトリガーした「敵のコード（head_sha）」を
+          # この特権コンテナ内にチェックアウトしてしまっている
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Run setup script (⚠️ VULNERABLE)
+        # 🚨 致命的な脆弱性: チェックアウトしたディレクトリ内でコマンドを実行してしまう
+        run: |
+          echo "Running setup..."
+          npm install || echo "Fallback if no package.json"

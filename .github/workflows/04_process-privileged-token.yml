@@ -1,0 +1,33 @@
+name: 04 - Process Result (Privileged)
+
+on:
+  workflow_run:
+    workflows: ["04 - Build (Untrusted)"]
+    types: [completed]
+
+# 💡 特権を持たせています
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact from untrusted PR
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-status
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read status
+        id: read
+        run: echo "data=$(cat status.txt)" >> $GITHUB_OUTPUT
+
+      - name: Print status (⚠️ VULNERABLE)
+        env:
+          # 🚨 致命的な脆弱性: スコープの壁を越えて、シェル全体に特権トークンを公開してしまった
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Test status is: ${{ steps.read.outputs.data }}"

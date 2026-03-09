@@ -1,0 +1,38 @@
+name: 08 - Finish Process (Privileged)
+
+on:
+  workflow_run:
+    workflows: ["07 - PR Build (Untrusted)"]
+    types: [completed]
+
+permissions:
+  contents: write # 特権を持たせます
+
+jobs:
+  process-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Base Code
+        # 🛡️ まず、自分自身の安全なコード（mainブランチ）をチェックアウトします
+        uses: actions/checkout@v4
+
+      - name: Download PR Report (⚠️ VULNERABLE)
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # 🚨 致命的な脆弱性: `path:` を指定していない！
+          # そのため、ダウンロードされたZIPファイルは、現在のディレクトリ（ソースコードの直下）に
+          # そのまま解凍・展開（上書き）されてしまいます。
+
+      - name: Run Upload Script
+        env:
+          # 💡 クラウドの強力な権限（今回はGITHUB_TOKENで代用）を環境変数にセットします
+          SECRET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "実行前の確認：スクリプトに実行権限を付与します"
+          chmod +x ./scripts/upload_report.sh
+          
+          # 🛡️ 開発者は「さっきチェックアウトした安全な正規スクリプト」を実行しているつもりです
+          ./scripts/upload_report.sh

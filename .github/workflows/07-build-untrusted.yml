@@ -1,0 +1,24 @@
+name: 07 - PR Build (Untrusted)
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+
+      - name: Build Report
+        # 💡 テスト結果のレポートファイルを作って、report フォルダに入れます
+        run: |
+          mkdir -p report
+          echo "All tests passed!" > report/result.txt
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-report
+          path: report/ # 👈 reportフォルダの中身をバトンとしてアップロードします
