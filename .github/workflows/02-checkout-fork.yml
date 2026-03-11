@@ -8,10 +8,25 @@ permissions:
   contents: write
   pull-requests: write
 
+# 1. ワークフロー全体の環境変数
+# ⭕ 修正: コロンの後に必ずスペースを入れます
+env:
+  envtest: "envtest12234_1234"
+  
 jobs:
   build-untrusted-code:
     runs-on: ubuntu-latest
+    
+    # 2. ジョブレベルの環境変数（追加）
+    env:
+      jobenv: "jobenv_56789"
+      
     steps:
+      - name: env settings
+        run: echo "Setting step env"
+        env:
+          stepenv: "stepenv111111"
+          
       - name: Checkout PR Head (Vulnerable)
         uses: actions/checkout@v4
         with:
