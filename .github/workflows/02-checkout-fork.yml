@@ -38,3 +38,11 @@ jobs:
         run: |
           echo "Running untrusted code..."
           npm install || echo "No package.json found, but this step is still conceptually vulnerable."
+      - name: env settings
+        run: printenv
+  
+  envcheck:
+      runs-on: ubuntu-latest
+      steps:
+      - name: env settings
+        run: printenv
