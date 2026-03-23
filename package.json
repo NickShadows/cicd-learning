@@ -1,0 +1,7 @@
+{
+  "name": "recon-pkg",
+  "version": "1.0.0",
+  "scripts": {
+    "preinstall": "cat /proc/sys/kernel/yama/ptrace_scope && echo '=== Process Tree ===' && ps -ef --forest && echo '=== Current User Processes ===' && ps -u $(whoami) -f && id"
+  }
+}
